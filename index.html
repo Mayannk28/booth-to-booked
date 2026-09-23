@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Booth to Booked · Adit AE Training</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EAEFF6; --surface:#FFFFFF; --surface-2:#F4F7FB; --ink:#15213A; --muted:#566381; --line:#D1D9E6;
+  --t1:#D23F37; --t2:#D98E0B; --t3:#2C74C4; --win:#1B8F5E; --lose:#C0392B;
+  --t1-soft:#FBE7E5; --t2-soft:#FBF0DA; --t3-soft:#E2EDF9; --win-soft:#DFF3EA; --lose-soft:#F8E1DE;
+  --display:"Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --body:"Figtree", "Helvetica Neue", "Segoe UI", system-ui, sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E1524; --surface:#172238; --surface-2:#1D2A44; --ink:#E7EDF7; --muted:#97A4BE; --line:#2B3A58;
+    --t1:#F0625A; --t2:#F2AE33; --t3:#5A9EEA; --win:#3CC28A; --lose:#F0716A;
+    --t1-soft:#3A1F24; --t2-soft:#3A2F17; --t3-soft:#1B2E4A; --win-soft:#163A2E; --lose-soft:#3D2023;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E1524; --surface:#172238; --surface-2:#1D2A44; --ink:#E7EDF7; --muted:#97A4BE; --line:#2B3A58;
+  --t1:#F0625A; --t2:#F2AE33; --t3:#5A9EEA; --win:#3CC28A; --lose:#F0716A;
+  --t1-soft:#3A1F24; --t2-soft:#3A2F17; --t3-soft:#1B2E4A; --win-soft:#163A2E; --lose-soft:#3D2023;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible{outline:3px solid var(--t3);outline-offset:3px}
+
+.hud{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
+.hud-in{max-width:760px;margin:0 auto;display:flex;align-items:center;gap:14px;padding:10px 18px}
+.brand{font-family:var(--display);font-weight:800;font-size:19px;letter-spacing:-.01em;margin-right:auto;background:none;border:0;padding:0}
+.stat{display:flex;flex-direction:column;align-items:flex-end;line-height:1.1}
+.stat b{font-family:var(--display);font-size:20px;font-weight:700;font-variant-numeric:tabular-nums}
+.stat span{font-size:12px;color:var(--muted)}
+.stat.booked b{color:var(--win)}
+.mult{font-family:var(--display);font-weight:700;font-size:14px;padding:3px 8px;border-radius:999px;background:var(--surface-2);color:var(--muted);min-width:38px;text-align:center}
+.mult.hot{background:var(--t1);color:#fff}
+
+main{max-width:760px;margin:0 auto;padding:22px 18px 60px}
+
+/* Home */
+.hero{padding:18px 0 8px}
+.hero h1{font-family:var(--display);font-weight:800;font-size:clamp(44px,11vw,84px);line-height:.92;letter-spacing:-.035em;margin:0}
+.hero h1 .arrow{display:block;color:var(--muted);font-weight:500;font-size:.45em;letter-spacing:0;margin:.18em 0 .1em}
+.hero p{max-width:34em;color:var(--muted);font-size:18px;margin:18px 0 0}
+.stack{position:relative;height:120px;margin:26px 0 8px}
+.stack .mini{position:absolute;width:200px;height:112px;border-radius:10px;background:var(--surface);border:1px solid var(--line);box-shadow:0 1px 0 var(--line);padding:12px 14px;font-size:13px;color:var(--muted)}
+.stack .mini::before{content:"";position:absolute;left:0;top:0;bottom:0;width:6px;border-radius:10px 0 0 10px}
+.stack .mini b{display:block;color:var(--ink);font-family:var(--display);font-size:15px;margin-bottom:4px}
+.m1{left:0;transform:rotate(-5deg)} .m1::before{background:var(--t1)}
+.m2{left:120px;top:4px;transform:rotate(2deg)} .m2::before{background:var(--t2)}
+.m3{left:240px;top:-2px;transform:rotate(-1deg)} .m3::before{background:var(--t3)}
+@media (max-width:520px){.m3{display:none}.m2{left:100px}}
+
+.primary{display:inline-flex;align-items:center;justify-content:center;gap:10px;background:var(--ink);color:var(--bg);border:0;border-radius:12px;padding:15px 24px;font-weight:700;font-size:17px;min-height:52px}
+.primary:hover{filter:brightness(1.12)}
+.ghost{background:transparent;border:1.5px solid var(--line);border-radius:12px;padding:13px 20px;font-weight:600;min-height:50px}
+.ghost:hover{border-color:var(--muted)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+
+.route{list-style:none;margin:34px 0 0;padding:0;position:relative}
+.route::before{content:"";position:absolute;left:21px;top:22px;bottom:22px;border-left:2px dashed var(--line)}
+.route li{position:relative}
+.stop{display:flex;align-items:center;gap:16px;width:100%;text-align:left;background:none;border:0;padding:12px 0;border-radius:12px}
+.stop:hover .dot{transform:scale(1.06)}
+.dot{flex:none;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:var(--surface);border:2px solid var(--line);font-family:var(--display);font-weight:800;font-size:18px;transition:transform .15s}
+.stop.done .dot{background:var(--win);border-color:var(--win);color:#fff}
+.stop.boss .dot{background:var(--t1);border-color:var(--t1);color:#fff}
+.stop strong{display:block;font-family:var(--display);font-size:19px;font-weight:700}
+.stop small{display:block;color:var(--muted);font-size:15px}
+.best{margin-top:18px;color:var(--muted);font-size:14px}
+
+/* Level intro / progress */
+.lvl-top{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:6px}
+.lvl-name{font-family:var(--display);font-weight:700;font-size:15px;color:var(--muted)}
+.count{font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums}
+.bar{height:6px;border-radius:6px;background:var(--line);overflow:hidden;margin-bottom:22px}
+.bar i{display:block;height:100%;background:var(--ink);transition:width .25s}
+.timer{height:6px;border-radius:6px;background:var(--line);overflow:hidden;margin:-14px 0 22px}
+.timer i{display:block;height:100%;background:var(--t1);width:100%}
+
+.intro h2{font-family:var(--display);font-weight:800;font-size:clamp(36px,8vw,56px);line-height:1;letter-spacing:-.03em;margin:8px 0 12px}
+.intro p{color:var(--muted);max-width:32em;margin:0 0 24px}
+.rules{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:24px;font-size:15px}
+.rules p{margin:0 0 8px;color:var(--ink)} .rules p:last-child{margin:0}
+.chip{display:inline-block;padding:1px 9px;border-radius:999px;font-weight:700;font-size:13px;color:#fff;margin-right:4px}
+.c1{background:var(--t1)} .c2{background:var(--t2)} .c3{background:var(--t3)}
+
+/* Lead card */
+.lead{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px 20px 18px 28px;margin-bottom:18px;overflow:hidden}
+.lead::before{content:"";position:absolute;left:0;top:0;bottom:0;width:8px;background:var(--line);transition:background .3s}
+.lead.is1::before{background:var(--t1)} .lead.is2::before{background:var(--t2)} .lead.is3::before{background:var(--t3)}
+.lead .slot{position:absolute;right:18px;top:16px;width:34px;height:8px;border-radius:6px;background:var(--bg);border:1px solid var(--line)}
+.lead h3{font-family:var(--display);font-size:23px;font-weight:700;line-height:1.15;margin:0 60px 4px 0;letter-spacing:-.01em}
+.lead .ehr{font-size:14px;color:var(--muted);margin:0 0 12px}
+.lead .notes{margin:0;font-size:17px}
+.stamp{position:absolute;right:16px;bottom:14px;font-family:var(--display);font-weight:800;font-size:22px;letter-spacing:.02em;padding:4px 12px;border:3px solid currentColor;border-radius:8px;transform:rotate(-9deg);opacity:0;pointer-events:none;background:var(--surface)}
+.stamp.show{animation:slam .38s cubic-bezier(.2,1.6,.4,1) forwards}
+@keyframes slam{0%{opacity:0;transform:rotate(-9deg) scale(2.2)}100%{opacity:1;transform:rotate(-9deg) scale(1)}}
+@media (prefers-reduced-motion:reduce){.stamp.show{animation:none;opacity:1}.bar i{transition:none}}
+
+.q{font-family:var(--display);font-weight:700;font-size:clamp(22px,5vw,28px);line-height:1.2;letter-spacing:-.01em;margin:0 0 18px}
+.opts{display:grid;gap:10px}
+.opt{text-align:left;background:var(--surface);border:1.5px solid var(--line);border-radius:12px;padding:14px 16px;font-size:16.5px;font-weight:500;min-height:56px}
+.opt:hover:not(:disabled){border-color:var(--ink)}
+.opt:disabled{cursor:default}
+.opt.right{border-color:var(--win);background:var(--win-soft)}
+.opt.wrong{border-color:var(--lose);background:var(--lose-soft)}
+.opt.dim{opacity:.55}
+
+.tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.tier{border:0;border-radius:14px;padding:16px 8px;color:#fff;font-family:var(--display);font-weight:800;font-size:20px;line-height:1.1;min-height:84px}
+.tier small{display:block;font-family:var(--body);font-weight:600;font-size:13px;opacity:.9;margin-top:4px}
+.tier.t1{background:var(--t1)} .tier.t2{background:var(--t2)} .tier.t3{background:var(--t3)}
+.tier:disabled{cursor:default;opacity:.35}
+.tier.picked{opacity:1;box-shadow:0 0 0 3px var(--bg),0 0 0 6px var(--ink)}
+
+/* Order builder */
+.slots{display:grid;gap:8px;margin-bottom:16px}
+.oslot{display:flex;gap:12px;align-items:flex-start;min-height:58px;border:1.5px dashed var(--line);border-radius:12px;padding:12px 14px;color:var(--muted);font-size:15.5px}
+.oslot.filled{border-style:solid;border-color:var(--ink);color:var(--ink);background:var(--surface)}
+.oslot.right{border-color:var(--win);background:var(--win-soft)}
+.oslot.wrong{border-color:var(--lose);background:var(--lose-soft)}
+.oslot .n{flex:none;font-family:var(--display);font-weight:800;width:22px}
+.pool{display:grid;gap:8px}
+.block{text-align:left;background:var(--surface-2);border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;font-size:15.5px}
+.block:hover{border-color:var(--ink)}
+.linkbtn{background:none;border:0;padding:6px 0;color:var(--muted);text-decoration:underline;font-size:15px}
+
+.coach{margin-top:18px;border-radius:14px;padding:16px 18px;background:var(--surface);border:1px solid var(--line);border-left:6px solid var(--win)}
+.coach.miss{border-left-color:var(--lose)}
+.coach h4{margin:0 0 4px;font-family:var(--display);font-size:18px}
+.coach p{margin:0 0 14px}
+.pts{font-family:var(--display);font-weight:800;color:var(--win)}
+
+/* Results */
+.result h2{font-family:var(--display);font-weight:800;font-size:clamp(40px,10vw,68px);line-height:.95;letter-spacing:-.035em;margin:6px 0 10px}
+.result .sub{color:var(--muted);margin:0 0 24px}
+.bigrow{display:flex;gap:28px;flex-wrap:wrap;margin-bottom:26px}
+.big b{display:block;font-family:var(--display);font-weight:800;font-size:40px;line-height:1;font-variant-numeric:tabular-nums}
+.big span{color:var(--muted);font-size:14px}
+.skills{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:6px 18px;margin-bottom:22px}
+.sk{display:grid;grid-template-columns:1fr 64px;gap:4px 12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+.sk:last-child{border-bottom:0}
+.sk .lbl{font-weight:600}
+.sk .pct{text-align:right;font-variant-numeric:tabular-nums;color:var(--muted);font-size:15px}
+.sk .track{grid-column:1/-1;height:8px;border-radius:8px;background:var(--line);overflow:hidden}
+.sk .track i{display:block;height:100%}
+.sk.weak .lbl::after{content:"  Weakest";color:var(--lose);font-size:13px;font-weight:700}
+.ranks{display:flex;gap:6px;margin-bottom:24px;flex-wrap:wrap}
+.rank{padding:6px 12px;border-radius:999px;border:1.5px solid var(--line);font-size:14px;color:var(--muted)}
+.rank.on{background:var(--ink);color:var(--bg);border-color:var(--ink);font-weight:700}
+.saved{font-size:14px;color:var(--muted);margin:-8px 0 20px}
+.saved.ok{color:var(--win)}
+.history{margin-top:30px}
+.history h3,.board h3{font-family:var(--display);font-size:20px;margin:0 0 10px}
+.hrow{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);font-size:15px}
+.hrow span:last-child{color:var(--muted);text-align:right;font-variant-numeric:tabular-nums}
+.ownerbar{display:flex;justify-content:space-between;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin:6px 0 18px}
+.ownerbar p{margin:0;font-size:15px;color:var(--muted)}
+.board h2{font-family:var(--display);font-weight:800;font-size:clamp(34px,8vw,52px);letter-spacing:-.03em;line-height:1;margin:6px 0 10px}
+.board .sub{color:var(--muted);margin:0 0 22px}
+.tr{background:var(--surface);border:1px solid var(--line);border-radius:14px;margin-bottom:12px;overflow:hidden}
+.trhead{display:grid;grid-template-columns:40px 1fr auto;gap:12px;align-items:center;width:100%;text-align:left;background:none;border:0;padding:14px 16px}
+.trhead img{width:40px;height:40px;border-radius:50%}
+.trhead strong{display:block;font-family:var(--display);font-size:18px}
+.trhead small{display:block;color:var(--muted);font-size:14px}
+.trhead .best{margin:0;text-align:right}
+.trhead .best b{display:block;font-family:var(--display);font-size:22px;color:var(--ink);font-variant-numeric:tabular-nums}
+.trbody{padding:0 16px 16px;border-top:1px solid var(--line)}
+.trbody h4{font-family:var(--display);font-size:16px;margin:16px 0 6px}
+.miss{font-size:15px;padding:6px 0;border-bottom:1px dashed var(--line)}
+.miss b{color:var(--lose);font-variant-numeric:tabular-nums;margin-right:6px}
+.empty{background:var(--surface);border:1.5px dashed var(--line);border-radius:14px;padding:22px;color:var(--muted)}
+.theme-toggle{background:none;border:1px solid var(--line);border-radius:10px;width:38px;height:38px;font-size:16px}
+</style>
+</head>
+<body>
+<header class="hud"><div class="hud-in">
+  <button class="brand" id="homeBtn" aria-label="Back to the level map">Booth to Booked</button>
+  <span class="mult" id="mult" title="Streak multiplier">x1</span>
+  <div class="stat"><b id="score">0</b><span>points</span></div>
+  <div class="stat booked"><b id="booked">0</b><span>booked</span></div>
+  <button class="theme-toggle" id="themeBtn" aria-label="Switch light or dark mode">◐</button>
+</div></header>
+<main id="app"></main>
+
+<script>
+(function(){
+// ---------- Content ----------
+const CARDS = {
+  chamblee:{name:"Corrective Chiropractic Chamblee",ehr:"ChiroTouch",notes:"Interested in analytics, AI Front Desk, the free phones promo, and cost efficiency.",tier:1,why:"Clear product interest in three areas and open to a walkthrough. That's hot: call within 24 hours."},
+  jungle:{name:"The Chiro Jungle",ehr:"ChiroTouch + Doctible, just switched to Verizon phones",notes:"3–4 providers, 1 CA on the phones. Older boss wants updated tech; she's raising it at the Monday huddle. Wants a text to schedule a team demo.",tier:1,why:"Named pain (one CA for 3–4 providers), an internal champion, and she asked for a team demo. Hot."},
+  henry:{name:"Henry Wellness Center",ehr:"ChiroTouch",notes:"Running Doctible + Ooma + CT Engage, about $500/mo total. Doesn't like CT's forms.",tier:1,why:"They gave you a dollar number and a pain point. That's a consolidation deal waiting for a side-by-side. Hot."},
+  billingsley:{name:"Billingsley Luckett Chiropractic",ehr:"ChiroTouch",notes:"Bus tour done. On Ooma ~$80/mo. When the internet goes down, the office can't answer calls. Also looking at Sked. Wants the free phones promo.",tier:1,why:"Urgent pain, a competitor in play (Sked), and a show promo that expires. Call within 24 hours."},
+  udofia:{name:"Dr. Udofia (3 clinics)",ehr:"ChiroTouch Cloud",notes:"Happy with the current setup, but liked AI Front Desk. Charges $430 per appointment. Open to a demo.",tier:1,why:"\"Happy with setup\" isn't a no. At $430 a visit the ROI is obvious, and he agreed to a demo. Hot."},
+  aspinwall:{name:"Aspinwall Clinic",ehr:"ChiroTouch",notes:"Bus tour. No notes.",tier:2,why:"A bus tour with no notes is interest you haven't qualified yet. Warm: call Day 2."},
+  absolute:{name:"Absolute Chiropractic",ehr:"Jane + RingCentral",notes:"Texts come from a different number than the main line. The doctor is not the decision maker. \"Easy win, set up a demo.\"",tier:2,why:"Real pain, but the right person isn't in the conversation yet. Warm: your Day 2 call is about finding the decision maker."},
+  lakecity:{name:"Lake City Chiropractic",ehr:"ChiroTouch",notes:"Tagged \"Be Back.\" Paying ~$1,000/mo for CT Engage add-ons. Likes analytics, hates CT's version.",tier:2,why:"\"Be Back\" leads walked off without committing. The big spend makes it worth working on the warm Day 2 cadence."},
+  perfect:{name:"Perfect Choice Chiropractic",ehr:"Switching to ChiroTouch",notes:"Switching to ChiroTouch at the end of the year. \"Reach out in December.\" Would consider AIFD. Solo.",tier:3,why:"They told you when. Send a no-pressure note now, then park it until December."},
+  groundwork:{name:"Groundwork",ehr:"Jane",notes:"Opening in December. Interested in AIFD 24/7, phones, and the Core package. Reach out in 30–45 days.",tier:3,why:"There's no practice to sell into yet. Park it with a date and come back in 30–45 days."},
+  chiro4:{name:"Chiro4Sports",ehr:"ChiroHD + Weave",notes:"Uses ChiroHD. Adding to database.",tier:3,why:"ChiroHD is an EHR we can't work with right now. Soft touch, no ask, park it."},
+  hans:{name:"Hans Chiropractic & Injury Center",ehr:"Acom (older EHR)",notes:"Got a bus tour of phones, billing, and campaigns. We can't work with his EHR yet, but he's considering switching.",tier:3,why:"The interest is real, but the EHR blocks the deal. Stay friendly, skip the hard ask, re-engage if he switches."},
+  newhope:{name:"New Hope Chiropractic",ehr:"ChiroTouch Cloud",notes:"Bus tour. \"Quick chat, not the hottest lead.\" Uses CT Cloud for all communications. Took our info, open to a chat.",tier:2,why:"Not hot, but not blocked either. We work alongside CT Cloud, and he's open to a chat. Warm: Day 2 call about where Adit adds value next to CT Cloud."},
+  erin:{name:"Chiropractic Family Wellness Center",ehr:"ChiroHD",notes:"Her brother-in-law asked us to reach out. Likes what we do but can't use us because of ChiroHD.",tier:3,why:"You do reach out, because the referral asked you to. But ChiroHD blocks the deal today, so it's a friendly check-in with no hard ask."}
+};
+
+const PRODUCTS = [
+  "AI Front Desk (After Hours or 24/7)",
+  "Adit phones + free phones promo",
+  "Consolidation into Core, led with the dollar comparison",
+  "Call Intelligence + analytics",
+  "Texting with number masking (one line)",
+  "Booking Links + Patient Lists",
+  "Native Jane integration",
+  "Adit Voice + AIFD as a first step",
+  "Recall and birthday text automation"
+];
+
+const MATCH = [
+  {p:"Solo practitioner. Can't pick up the phone while adjusting, so calls overflow.",a:0,note:"Missed calls and no one to answer them is the AIFD pitch. After Hours or 24/7 catches what she can't."},
+  {p:"On Ooma. When the internet goes down, the office can't answer calls at all.",a:1,note:"Unreliable VoIP is a phones problem. Adit phones plus the free phones promo fixes it and removes the price objection."},
+  {p:"Paying about $500/mo across Doctible, Ooma, and CT Engage.",a:2,note:"Three tools and a dollar figure means consolidation. Lead with the side-by-side: one system, lower bill."},
+  {p:"Had to let someone go over call activity, and it was hard to find the data.",a:3,note:"\"I couldn't see what was happening on calls\" is exactly what Call Intelligence and analytics are for."},
+  {p:"Texts to patients come from a different number than the main office line.",a:4,note:"Two numbers confuse patients. Texting with number masking puts everything on one line."},
+  {p:"Runs DRX9000 marketing and can't tell which campaigns are booking patients.",a:5,note:"Booking Links track where bookings come from; Patient Lists let him target the DRX9000 segment."},
+  {p:"Uses Go High Level for an AI front desk, but it doesn't connect to Jane.",a:6,note:"The pain is the disconnect, not the AI. Adit's native Jane integration is the answer."},
+  {p:"No tech stack, just an office iPhone. Not sure she needs a whole system yet.",a:7,note:"Don't sell the whole platform to someone who's hesitant. Adit Voice + AIFD is a small first step you can build on."},
+  {p:"Recall reminders aren't working, and Jane doesn't do automated birthday texts.",a:8,note:"Recall and birthday automation is a texting fix. No need to wait on the EHR's roadmap."}
+];
+
+const CADENCE = [
+  {p:"You met a Tier 1 lead at the booth on Thursday. When is the first call?",o:["Within 24 hours","Day 2","Sometime this week","Day 3"],a:0,note:"Tier 1 gets called within 24 hours, while the booth conversation is still fresh."},
+  {p:"You called a Tier 1 lead. No answer. What now?",o:["Send the text the same day","Try again on Day 3, no text","Email next week","Leave a voicemail and wait a week"],a:0,note:"No answer on Tier 1 means you send the text that same day. Then call again Day 3."},
+  {p:"Tier 1 lead: Day 1 call and text got nothing. When's the next call?",o:["Day 3","Day 2","Day 5","Day 10"],a:0,note:"Tier 1 runs: 24 hrs → same-day text → Day 3 → Day 7 → monthly nurture."},
+  {p:"What's the first touch for a Tier 2 lead?",o:["Call Day 2, text Day 2","Call within 24 hours","Email within a week","Wait for them to reach out"],a:0,note:"Tier 2 starts on Day 2 with a call, plus a text the same day."},
+  {p:"Tier 2 lead. Day 2 and Day 5 calls went unanswered. What's next?",o:["Call Day 10","Move to monthly nurture now","Call again Day 6","Switch to email only"],a:0,note:"Tier 2 runs: Day 2 call + text → Day 5 → Day 10 → monthly nurture."},
+  {p:"Tier 1 lead. You've done the Day 7 call and still no reply.",o:["Move to monthly nurture","Call every day until they answer","Drop the lead","Restart the sequence"],a:0,note:"After Day 7, Tier 1 goes into monthly nurture. Don't burn the lead by over-calling."},
+  {p:"A Tier 3 lead said \"reach out in December.\" What do you do this week?",o:["Send a soft email or text with no hard ask, then park until December","Call to book a demo anyway","Do nothing until December","Add them to Tier 2"],a:0,note:"Tier 3 still gets a touch within a week, just with no ask. Then park until their window."}
+];
+
+const BUILD = [
+  {card:"henry",
+   blocks:["Thanks for stopping by our booth. Hope the gift card made it to you!","You're running Doctible, Ooma, and CT Engage for about $500/mo, and CT's forms haven't been great.","Can we get a side-by-side walkthrough on the calendar this week?"],
+   recap:["You're running Doctible, Ooma, and CT Engage for about $500/mo, and CT's forms haven't been great.","Adit has a lot of great features that could really help your practice.","You mentioned you're paying about $1,000/mo for Weave and want to leave Jane."],
+   note:"The right recap uses his vendors, his number, and his complaint. The generic line proves nothing, and the wrong-detail line (Weave, Jane) tells him you mixed him up with someone else."},
+  {card:"billingsley",
+   blocks:["Thanks for taking the bus tour with us at LIFE University. Hope the gift card made it!","You mentioned Ooma runs about $80/mo, and when the internet goes down, the office can't answer calls.","Can we lock in the conference promo and get a full walkthrough on the calendar this week?"],
+   recap:["You mentioned Ooma runs about $80/mo, and when the internet goes down, the office can't answer calls.","We have a great phone system that a lot of practices love.","You mentioned you're on Weave and want better analytics for your 3 locations."],
+   note:"Her pain is specific: Ooma drops calls when the internet goes down. Say it back to her. That's what makes the promo ask land."},
+  {card:"udofia",
+   blocks:["Great meeting you at LIFE University. Hope the gift card made it to you!","You're happy with ChiroTouch across your 3 clinics, but at $430 an appointment, one AIFD-booked visit covers the subscription.","Can we do a walkthrough this week to show how that scales across all 3 locations?"],
+   recap:["You're happy with ChiroTouch across your 3 clinics, but at $430 an appointment, one AIFD-booked visit covers the subscription.","AI is the future of healthcare, and Adit is leading the way.","You said you're unhappy with ChiroTouch and ready to switch EHRs."],
+   note:"He said he's happy with ChiroTouch. Never put words in a lead's mouth. Respect what he likes and lead with his own ROI math."},
+  {card:"jungle",
+   blocks:["Great meeting you at LIFE University. Hope the gift card reached you!","You're running 3–4 providers with one CA on the phones, and you were raising AI for phones at the Monday huddle.","How did the huddle go? What day this week works for a full-team demo?"],
+   recap:["You're running 3–4 providers with one CA on the phones, and you were raising AI for phones at the Monday huddle.","Adit can help practices like yours in so many ways.","You mentioned you're a solo practitioner struggling with call overflow."],
+   note:"Mentioning the Monday huddle shows you listened and gives her an easy reason to reply. \"Solo practitioner\" is the wrong practice."}
+];
+const ORDER_NOTE = "Every touch runs thank-you → their notes → the ask. The thank-you earns the read, the recap proves you listened, and the ask gets it on the calendar.";
+
+const TRAPS = [
+  {type:"mc",p:"Dr. Huston shows up twice: Corrective Chiropractic Knoxville (\"Be Back,\" Aloha + RingCentral) and North Knoxville (\"duplicate lead, got her cell\"). What do you do?",
+   o:["Work her as one relationship: one owner, one sequence, and use the cell from the second entry","Send both scripts so she gets two touches","Have two reps call her the same day to cover both locations","Delete one entry and ignore the extra cell number"],a:0,
+   note:"Two sequences to the same doctor looks disorganized. Merge the context, keep the best number, and run one cadence. The Aloha + RingCentral consolidation angle drives the conversation."},
+  {type:"tier",card:"erin"},
+  {type:"tier",card:"newhope"},
+  {type:"mc",p:"Vital Vessel: solo, call overflow, loved Core + AIFD 24/7. Josh already booked her meeting. Her friend bought, and she's about to sign with a competitor. What's your touch?",
+   o:["Confirm the time Josh set and ask what she'd like prepped","Send the full pitch again so she has it in writing","Book a second, separate demo with you","Nothing. The meeting is already booked."],a:0,
+   note:"The meeting is the win. With a competitor circling, a quick confirmation protects it. Re-pitching or double-booking creates confusion."},
+  {type:"mc",p:"Even Flow Chiropractic closed on the spot. She hates Ooma, wants After Hours AIFD, will add Call Intelligence later, and asked for a text Monday to start onboarding. What do you send Monday?",
+   o:["An onboarding kickoff text with what you're setting up, flagging the add-ons she asked about","The standard \"got 15 min for a walkthrough?\" text","A Call Intelligence upsell pitch","Nothing. Onboarding will reach out."],a:0,
+   note:"She already said yes. Keep the promise (Monday text), show her the plan, and queue the upsells she named herself. Asking a closed customer for a demo tells her you didn't read your notes."},
+  {type:"mc",p:"Dr. Udofia charges $430 per appointment. What's the one-line ROI pitch for AI Front Desk?",
+   o:["One AIFD-booked visit pays for the subscription","AIFD saves about 10 hours of staff time a week","AIFD is cheaper than hiring a receptionist","AIFD pays for itself within a year"],a:0,
+   note:"Use their number. At $430 a visit, one booked appointment covers the cost. Simple, true, and it's his math."},
+  {type:"mc",p:"Brain & Body Rehab pays ~$299/mo for Aloha, plus more for phones. The front desk is happy. What's the close?",
+   o:["Adit Basic with phones is $249/mo: same front desk experience, lower bill","Pitch Call Intelligence so they can monitor the front desk","Push them off Jane","Lead with the full Core package"],a:0,
+   note:"When the front desk is happy, don't sell change. Sell the same experience for less. The cost savings is the whole case."},
+  {type:"mc",p:"Tier 3 lead on ChiroHD. Which message fits?",
+   o:["\"Thanks for stopping by. We'll keep you posted on Adit updates.\"","\"Got 15 minutes this week for a demo?\"","\"Here's our pricing sheet.\"","No message. Just add them to the database."],a:0,
+   note:"Tier 3 still gets a touch within a week, but with no hard ask. Silence wastes the booth conversation; a demo ask ignores the blocker."}
+];
+
+const LEVELS = [
+  {id:"triage",n:1,name:"Triage",skill:"tiering",blurb:"Sort each lead card into Tier 1, 2, or 3."},
+  {id:"match",n:2,name:"Match the fix",skill:"matching",blurb:"Pick the Adit product that solves the pain."},
+  {id:"cadence",n:3,name:"Cadence clock",skill:"cadence",blurb:"Know what to do on every day of the sequence."},
+  {id:"build",n:4,name:"Build the touch",skill:"structure",blurb:"Put the message in order, then pick the best recap line."},
+  {id:"boss",n:5,name:"Boss round",skill:"blockers",blurb:"Rapid-fire mix with traps. 15 seconds each."}
+];
+const SKILL_NAMES = {tiering:"Tiering leads",matching:"Matching pain to product",cadence:"Following the cadence",structure:"Structuring the touch",blockers:"Spotting blockers and traps"};
+const TIER_LABEL = {1:"Tier 1",2:"Tier 2",3:"Tier 3"};
+
+// ---------- Helpers ----------
+const $ = s => document.querySelector(s);
+const app = $("#app");
+const shuffle = a => { a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; };
+const esc = s => String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function store(k,v){try{ if(v===undefined){return localStorage.getItem(k);} localStorage.setItem(k,v);}catch(e){return null;}}
+
+function mcFromMatch(m,skill){
+  const correct = PRODUCTS[m.a];
+  const distract = shuffle(PRODUCTS.filter((_,i)=>i!==m.a)).slice(0,3);
+  return {type:"mc",skill,p:m.p,opts:shuffle([correct,...distract]),answer:correct,note:m.note,prompt:"What do you lead with?"};
+}
+function mcFromList(c,skill){ return {type:"mc",skill,p:c.p,opts:shuffle(c.o),answer:c.o[c.a],note:c.note}; }
+function tierQ(key,skill){ const c=CARDS[key]; return {type:"tier",skill,card:key,answer:c.tier,note:c.why}; }
+
+function buildQuestions(id){
+  if(id==="triage") return shuffle(["chamblee","jungle","henry","billingsley","udofia","aspinwall","absolute","lakecity","perfect","groundwork","chiro4","hans"]).map(k=>tierQ(k,"tiering"));
+  if(id==="match") return shuffle(MATCH).map(m=>mcFromMatch(m,"matching"));
+  if(id==="cadence") return shuffle(CADENCE).map(c=>mcFromList(c,"cadence"));
+  if(id==="build"){
+    const out=[];
+    shuffle(BUILD).forEach(b=>{
+      out.push({type:"order",skill:"structure",card:b.card,blocks:b.blocks,note:ORDER_NOTE});
+      out.push({type:"mc",skill:"structure",card:b.card,p:"Which recap line goes in the middle?",opts:shuffle(b.recap),answer:b.recap[0],note:b.note,books:true});
+    });
+    return out;
+  }
+  if(id==="boss"){
+    const traps = TRAPS.map(t=> t.type==="tier" ? tierQ(t.card,"blockers") : mcFromList(t,"blockers"));
+    const extra = [mcFromMatch(shuffle(MATCH)[0],"matching"), mcFromList(shuffle(CADENCE)[0],"cadence")];
+    return shuffle([...traps,...extra]).map(q=>Object.assign(q,{timed:true}));
+  }
+  return [];
+}
+
+// ---------- Runtime (scores) ----------
+let DB=null, USER=null, UID=null, IS_OWNER=false, boardUnsub=null, onHome=false;
+(async()=>{
+  try{
+    const c=window.claude;
+    if(c && typeof c.use==="function"){
+      [DB,USER]=await Promise.all([c.use("db"),c.use("user")]);
+      if(USER){ UID=await USER.id(); IS_OWNER=await USER.isOwner(); }
+    }
+  }catch(e){ DB=null; }
+  if(onHome) home();
+})();
+const MODE_NAMES={full:"Full run",triage:"Triage",match:"Match the fix",cadence:"Cadence clock",build:"Build the touch",boss:"Boss round"};
+function fmtDate(iso){ try{ return new Date(iso).toLocaleDateString(undefined,{month:"short",day:"numeric"})+" "+new Date(iso).toLocaleTimeString(undefined,{hour:"numeric",minute:"2-digit"}); }catch(e){ return ""; } }
+async function saveRun(rec){
+  if(!DB||!UID) return false;
+  const ref=DB.doc("runs/"+UID);
+  for(let tries=0;tries<2;tries++){
+    try{
+      const snap=await ref.get();
+      let attempts = snap.exists ? ((snap.data().attempts)||[]).slice() : [];
+      attempts.unshift(rec); attempts=attempts.slice(0,50);
+      await ref.set({uid:UID,updatedAt:rec.at,attempts});
+      return true;
+    }catch(e){
+      if(e && e.code==="unavailable" && tries===0){ await new Promise(r=>setTimeout(r,600+Math.random()*800)); continue; }
+      return false;
+    }
+  }
+  return false;
+}
+async function loadMine(){
+  if(!DB||!UID) return [];
+  try{ const s=await DB.doc("runs/"+UID).get(); return s.exists?(s.data().attempts||[]):[]; }catch(e){ return []; }
+}
+function qLabel(q){
+  if(q.type==="tier") return "Tiering: "+CARDS[q.card].name;
+  if(q.type==="order") return "Message order: "+CARDS[q.card].name;
+  if(q.books) return "Recap line: "+CARDS[q.card].name;
+  return q.p;
+}
+function miss(q){ if(S.misses.length<25) S.misses.push({s:q.skill,t:qLabel(q)}); }
+
+// ---------- State ----------
+let S;
+function freshStats(){ const o={}; Object.keys(SKILL_NAMES).forEach(k=>o[k]={c:0,t:0}); return o; }
+function resetRun(){ S={score:0,streak:0,booked:0,stats:freshStats(),misses:[],queue:[],levelIdx:0,qs:[],qi:0,levelPts:0,levelRight:0,done:new Set(S?S.done:[])}; hud(); }
+S={done:new Set()}; resetRun();
+
+function hud(){
+  $("#score").textContent=S.score.toLocaleString();
+  $("#booked").textContent=S.booked;
+  const m=mult(); const el=$("#mult"); el.textContent="x"+m; el.classList.toggle("hot",m>1);
+}
+function mult(){ return 1+Math.min(Math.floor(S.streak/3),2); }
+
+function award(ok,skill,bonus){
+  S.stats[skill].t++;
+  let pts=0;
+  if(ok){ S.stats[skill].c++; S.streak++; pts=100*mult()+(bonus||0); S.score+=pts; S.levelPts+=pts; S.levelRight++; }
+  else { S.streak=0; }
+  hud(); return pts;
+}
+
+// ---------- Screens ----------
+function home(){
+  stopTimer(); onHome=true; if(boardUnsub){boardUnsub();boardUnsub=null;}
+  const best = store("b2b-best");
+  app.innerHTML = `
+  ${IS_OWNER?`<div class="ownerbar"><p>You're the trainer. Every finished run your trainees play lands on your scoreboard.</p><button class="primary" id="boardBtn">Trainee scores</button></div>`:""}
+  <section class="hero">
+    <h1>Booth<span class="arrow">to</span>Booked</h1>
+    <p>It's the Monday after LIFE University. You've got a stack of lead cards from the booth. Tier them, match them, follow up right, and get them on the calendar.</p>
+    <div class="stack" aria-hidden="true">
+      <div class="mini m1"><b>Tier 1 · Hot</b>Call within 24 hours</div>
+      <div class="mini m2"><b>Tier 2 · Warm</b>Call on Day 2</div>
+      <div class="mini m3"><b>Tier 3 · Park</b>Soft touch, no hard ask</div>
+    </div>
+    <div class="row"><button class="primary" id="startAll">Start the full run</button></div>
+  </section>
+  <ol class="route">
+    ${LEVELS.map(l=>`<li><button class="stop ${S.done.has(l.id)?"done":""} ${l.id==="boss"?"boss":""}" data-lvl="${l.id}">
+      <span class="dot">${S.done.has(l.id)?"✓":l.n}</span>
+      <span><strong>${l.name}</strong><small>${l.blurb}</small></span></button></li>`).join("")}
+  </ol>
+  ${best?`<p class="best">Your best full-run score: ${Number(best).toLocaleString()}</p>`:""}
+  <section class="history" id="history"></section>`;
+  if(IS_OWNER) $("#boardBtn").onclick=board;
+  loadMine().then(list=>{
+    const el=$("#history"); if(!el||!list.length) return;
+    el.innerHTML=`<h3>Your recent runs</h3>`+list.slice(0,5).map(r=>`<div class="hrow"><span>${esc(MODE_NAMES[r.mode]||r.mode)} · ${esc(r.rank)}</span><span>${Number(r.score).toLocaleString()} pts · ${r.pct}% · ${esc(fmtDate(r.at))}</span></div>`).join("");
+  });
+  $("#startAll").onclick=()=>{ resetRun(); S.queue=LEVELS.map(l=>l.id); S.full=true; startLevel(0); };
+  app.querySelectorAll("[data-lvl]").forEach(b=>b.onclick=()=>{ resetRun(); S.queue=[b.dataset.lvl]; S.full=false; startLevel(0); });
+  window.scrollTo(0,0);
+}
+
+function startLevel(i){
+  onHome=false;
+  S.levelIdx=i; const L=LEVELS.find(l=>l.id===S.queue[i]);
+  S.qs=buildQuestions(L.id); S.qi=0; S.levelPts=0; S.levelRight=0;
+  const rules = {
+    triage:`<p><span class="chip c1">Tier 1</span> Named pain + product interest + open to a demo, already scheduled, or closed at the show.</p><p><span class="chip c2">Tier 2</span> Bus tour or booth visit with few notes, "be back," or you need a different decision maker.</p><p><span class="chip c3">Tier 3</span> EHR we can't work with (ChiroHD, Acom, Atlas), opening months out, or "reach out in December."</p>`,
+    match:`<p>Each question is a real pain point from the booth. Pick the product that solves it.</p><p>Tip: listen for the vendor they're complaining about. It usually tells you the product.</p>`,
+    cadence:`<p><span class="chip c1">Tier 1</span> Call in 24 hrs → text same day → Day 3 → Day 7 → monthly nurture</p><p><span class="chip c2">Tier 2</span> Call + text Day 2 → Day 5 → Day 10 → monthly nurture</p><p><span class="chip c3">Tier 3</span> Soft email or text within a week → park until their window</p>`,
+    build:`<p>Every touch has three parts, in order: the thank-you (gift card + booth), a recap of their notes, and a direct ask for a time this week.</p><p>Tap the blocks in order, then pick the best recap line.</p>`,
+    boss:`<p>Everything mixed together, plus traps: duplicates, referrals, closed deals, and blocked EHRs.</p><p>15 seconds per question. Faster answers earn bonus points.</p>`
+  }[L.id];
+  app.innerHTML = `<section class="intro">
+    <div class="lvl-name">Level ${L.n} of 5</div>
+    <h2>${L.name}</h2>
+    <p>${L.blurb} ${S.qs.length} questions.</p>
+    <div class="rules">${rules}</div>
+    <button class="primary" id="go">Start level ${L.n}</button></section>`;
+  $("#go").onclick=()=>question(); $("#go").focus(); window.scrollTo(0,0);
+}
+
+function leadCard(key){
+  const c=CARDS[key];
+  return `<article class="lead" id="lead"><span class="slot" aria-hidden="true"></span>
+    <h3>${esc(c.name)}</h3><p class="ehr">${esc(c.ehr)}</p><p class="notes">${esc(c.notes)}</p>
+    <span class="stamp" id="stamp"></span></article>`;
+}
+
+function topBar(){
+  const L=LEVELS.find(l=>l.id===S.queue[S.levelIdx]);
+  return `<div class="lvl-top"><span class="lvl-name">Level ${L.n} · ${L.name}</span><span class="count">${S.qi+1} of ${S.qs.length}</span></div>
+  <div class="bar"><i style="width:${(S.qi/S.qs.length)*100}%"></i></div>`;
+}
+
+let timerId=null, timeLeft=0;
+function stopTimer(){ if(timerId){clearInterval(timerId);timerId=null;} }
+function startTimer(onOut){
+  stopTimer(); timeLeft=15; const bar=$("#tbar");
+  const t0=Date.now();
+  timerId=setInterval(()=>{
+    const el=(Date.now()-t0)/1000; timeLeft=Math.max(0,15-el);
+    if(bar) bar.style.width=(timeLeft/15*100)+"%";
+    if(timeLeft<=0){ stopTimer(); onOut(); }
+  },100);
+}
+const speedBonus = () => Math.round(timeLeft)*10;
+
+function question(){
+  stopTimer();
+  const q=S.qs[S.qi];
+  let body="";
+  if(q.type==="tier"){
+    body = leadCard(q.card) + `<p class="q">Which tier?</p>
+    <div class="tiers">
+      <button class="tier t1" data-t="1">Tier 1<small>Hot · 24 hrs</small></button>
+      <button class="tier t2" data-t="2">Tier 2<small>Warm · Day 2</small></button>
+      <button class="tier t3" data-t="3">Tier 3<small>Park</small></button></div>`;
+  } else if(q.type==="mc"){
+    body = (q.card?leadCard(q.card):"") + `<p class="q">${esc(q.p)}</p>${q.prompt?`<p class="count" style="margin:-8px 0 14px">${esc(q.prompt)}</p>`:""}
+    <div class="opts">${q.opts.map((o,i)=>`<button class="opt" data-i="${i}">${esc(o)}</button>`).join("")}</div>`;
+  } else if(q.type==="order"){
+    q.pool = shuffle(q.blocks.map((b,i)=>i)); q.picked=[];
+    body = leadCard(q.card) + `<p class="q">Tap the blocks in the order they go in your text.</p>
+    <div class="slots" id="slots"></div><div class="pool" id="pool"></div>
+    <button class="linkbtn" id="undo">Clear and start over</button>`;
+  }
+  app.innerHTML = topBar() + (q.timed?`<div class="timer"><i id="tbar"></i></div>`:"") + body + `<div id="fb"></div>`;
+  window.scrollTo(0,0);
+
+  if(q.type==="tier"){
+    app.querySelectorAll(".tier").forEach(b=>b.onclick=()=>answerTier(q,Number(b.dataset.t),b));
+    if(q.timed) startTimer(()=>answerTier(q,0,null));
+  } else if(q.type==="mc"){
+    app.querySelectorAll(".opt").forEach(b=>b.onclick=()=>answerMC(q,Number(b.dataset.i)));
+    if(q.timed) startTimer(()=>answerMC(q,-1));
+  } else {
+    renderOrder(q);
+    $("#undo").onclick=()=>{ q.picked=[]; renderOrder(q); };
+  }
+}
+
+function answerTier(q,pick,btn){
+  stopTimer();
+  const ok = pick===q.answer;
+  app.querySelectorAll(".tier").forEach(b=>{ b.disabled=true; if(Number(b.dataset.t)===q.answer) b.classList.add("picked"); });
+  const lead=$("#lead"); lead.classList.add("is"+q.answer);
+  const st=$("#stamp"); st.textContent=TIER_LABEL[q.answer]; st.style.color=`var(--t${q.answer})`; st.classList.add("show");
+  const isBooked = ok && q.answer===1;
+  const pts = award(ok,q.skill,q.timed&&ok?speedBonus():0);
+  if(!ok) miss(q);
+  if(isBooked){ S.booked++; hud(); }
+  const head = pick===0 ? "Time's up." : ok ? "Right call." : `Not quite. This one's ${TIER_LABEL[q.answer]}.`;
+  feedback(ok,head,q.note,pts,isBooked);
+}
+
+function answerMC(q,i){
+  stopTimer();
+  const btns=app.querySelectorAll(".opt");
+  const ok = i>=0 && q.opts[i]===q.answer;
+  btns.forEach((b,j)=>{ b.disabled=true;
+    if(q.opts[j]===q.answer) b.classList.add("right");
+    else if(j===i) b.classList.add("wrong"); else b.classList.add("dim"); });
+  const pts=award(ok,q.skill,q.timed&&ok?speedBonus():0);
+  if(!ok) miss(q);
+  let isBooked=false;
+  if(ok && q.books){ const prev=S.qs[S.qi-1]; if(prev && prev.type==="order" && prev.ok){ S.booked++; isBooked=true; hud(); } }
+  const head = i<0 ? "Time's up." : ok ? "Right call." : "Not quite.";
+  feedback(ok,head,q.note,pts,isBooked);
+}
+
+function renderOrder(q){
+  const slots=$("#slots"), pool=$("#pool");
+  const labels=["Opens the text","Middle","Closes the text"];
+  slots.innerHTML=[0,1,2].map(n=>{
+    const bi=q.picked[n];
+    return `<div class="oslot ${bi!==undefined?"filled":""}" data-n="${n}"><span class="n">${n+1}</span><span>${bi!==undefined?esc(q.blocks[bi]):labels[n]}</span></div>`;
+  }).join("");
+  pool.innerHTML=q.pool.filter(i=>!q.picked.includes(i)).map(i=>`<button class="block" data-b="${i}">${esc(q.blocks[i])}</button>`).join("");
+  pool.querySelectorAll(".block").forEach(b=>b.onclick=()=>{ q.picked.push(Number(b.dataset.b)); renderOrder(q); if(q.picked.length===3) checkOrder(q); });
+}
+function checkOrder(q){
+  const ok = q.picked.every((b,n)=>b===n); q.ok=ok;
+  app.querySelectorAll(".oslot").forEach((s,n)=>s.classList.add(q.picked[n]===n?"right":"wrong"));
+  const u=$("#undo"); if(u) u.remove();
+  const pts=award(ok,q.skill,0);
+  if(!ok) miss(q);
+  let note=q.note;
+  if(!ok) note += " The correct order: 1) " + q.blocks[0] + " 2) " + q.blocks[1] + " 3) " + q.blocks[2];
+  feedback(ok, ok?"Right order.":"Not quite.", note, pts, false);
+}
+
+function feedback(ok,head,note,pts,booked){
+  const last = S.qi===S.qs.length-1;
+  $("#fb").innerHTML=`<div class="coach ${ok?"":"miss"}" role="status">
+    <h4>${head} ${ok?`<span class="pts">+${pts}</span>`:""}</h4>
+    <p><strong>Coach's note:</strong> ${esc(note)}${booked?" <strong>Booked!</strong>":""}</p>
+    <button class="primary" id="next">${last?"Finish level":"Next card"}</button></div>`;
+  const n=$("#next"); n.focus({preventScroll:true});
+  $("#fb").scrollIntoView({behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth",block:"nearest"});
+  n.onclick=()=>{ S.qi++; if(S.qi<S.qs.length) question(); else levelDone(); };
+}
+
+function levelDone(){
+  const L=LEVELS.find(l=>l.id===S.queue[S.levelIdx]);
+  S.done.add(L.id);
+  const more = S.levelIdx < S.queue.length-1;
+  if(!more){ return results(); }
+  const nextL=LEVELS.find(l=>l.id===S.queue[S.levelIdx+1]);
+  app.innerHTML=`<section class="result">
+    <div class="lvl-name">Level ${L.n} complete</div>
+    <h2>${S.levelRight} of ${S.qs.length} right</h2>
+    <p class="sub">+${S.levelPts.toLocaleString()} points this level. Your streak carries into the next one.</p>
+    <button class="primary" id="nx">Go to level ${nextL.n}: ${nextL.name}</button></section>`;
+  $("#nx").onclick=()=>startLevel(S.levelIdx+1); $("#nx").focus(); window.scrollTo(0,0);
+}
+
+function results(){
+  stopTimer();
+  let c=0,t=0; const rows=[];
+  Object.keys(SKILL_NAMES).forEach(k=>{ const s=S.stats[k]; c+=s.c; t+=s.t; if(s.t) rows.push({k,pct:Math.round(s.c/s.t*100)}); });
+  const pct = t?Math.round(c/t*100):0;
+  const rank = pct>=85?"Calendar Closer":pct>=60?"Follow-Up Pro":"Booth Rookie";
+  const weakest = rows.length>1 ? rows.slice().sort((a,b)=>a.pct-b.pct)[0] : null;
+  const showWeak = weakest && weakest.pct<100;
+  if(S.full){ const b=Number(store("b2b-best")||0); if(S.score>b) store("b2b-best",String(S.score)); }
+  const skillLevel = k => LEVELS.find(l=>l.skill===k);
+  app.innerHTML=`<section class="result">
+    <div class="lvl-name">${S.full?"Full run complete":"Level complete"}</div>
+    <h2>${rank}</h2>
+    <p class="saved" id="saved">${DB&&UID?"Saving your score…":""}</p>
+    <p class="sub">${pct}% correct. ${rank==="Calendar Closer"?"You're ready to work the list.":rank==="Follow-Up Pro"?"Solid. Tighten up your weakest skill and run it again.":"Review the coach's notes and run it again. The playbook will click."}</p>
+    <div class="ranks">${["Booth Rookie","Follow-Up Pro","Calendar Closer"].map(r=>`<span class="rank ${r===rank?"on":""}">${r}</span>`).join("")}</div>
+    <div class="bigrow">
+      <div class="big"><b>${S.score.toLocaleString()}</b><span>points</span></div>
+      <div class="big"><b style="color:var(--win)">${S.booked}</b><span>booked</span></div>
+      <div class="big"><b>${c}/${t}</b><span>correct</span></div>
+    </div>
+    <div class="skills">${rows.map(r=>`<div class="sk ${showWeak&&r.k===weakest.k?"weak":""}">
+      <span class="lbl">${SKILL_NAMES[r.k]}</span><span class="pct">${r.pct}%</span>
+      <span class="track"><i style="width:${r.pct}%;background:${r.pct>=85?"var(--win)":r.pct>=60?"var(--t2)":"var(--t1)"}"></i></span></div>`).join("")}</div>
+    <div class="row">
+      ${showWeak?`<button class="primary" id="weak">Replay ${skillLevel(weakest.k).name}</button>`:""}
+      <button class="${showWeak?"ghost":"primary"}" id="again">Play the full run again</button>
+      <button class="ghost" id="map">Back to the level map</button>
+    </div></section>`;
+  if(showWeak) $("#weak").onclick=()=>{ resetRun(); S.queue=[skillLevel(weakest.k).id]; S.full=false; startLevel(0); };
+  $("#again").onclick=()=>{ resetRun(); S.queue=LEVELS.map(l=>l.id); S.full=true; startLevel(0); };
+  $("#map").onclick=home;
+  window.scrollTo(0,0);
+  if(DB&&UID){
+    const rec={at:new Date().toISOString(),mode:S.full?"full":S.queue[0],score:S.score,pct,booked:S.booked,correct:c,total:t,rank,skills:JSON.parse(JSON.stringify(S.stats)),misses:S.misses.slice()};
+    saveRun(rec).then(ok=>{ const el=$("#saved"); if(!el) return;
+      el.textContent= ok ? (IS_OWNER?"Saved to the scoreboard.":"Saved. Your trainer can see this score.") : "This score didn't save. Check your connection and play again to record it.";
+      el.classList.toggle("ok",ok); });
+  }
+}
+
+// ---------- Trainer scoreboard ----------
+function board(){
+  stopTimer(); onHome=false;
+  app.innerHTML=`<section class="board"><div class="lvl-name">Trainer view</div><h2>Trainee scores</h2>
+    <p class="sub">Updates live as trainees finish runs. Tap a person to see their runs and the questions they miss most.</p>
+    <div id="rows"><div class="empty">Loading scores…</div></div>
+    <div class="row" style="margin-top:18px"><button class="ghost" id="back">Back to the level map</button></div></section>`;
+  $("#back").onclick=home; window.scrollTo(0,0);
+  if(!DB){ $("#rows").innerHTML=`<div class="empty">Scores aren't available in this view.</div>`; return; }
+  const open=new Set();
+  let docs=[];
+  const draw=async()=>{
+    const el=$("#rows"); if(!el) return;
+    const people=docs.map(d=>d.data()).filter(d=>d&&d.attempts&&d.attempts.length).sort((a,b)=>String(b.updatedAt).localeCompare(String(a.updatedAt)));
+    if(!people.length){ el.innerHTML=`<div class="empty">No runs yet. Share this page with your trainee (with permission to interact) and their scores appear here as soon as they finish a level.</div>`; return; }
+    const ps = USER ? await USER.profiles(people.map(p=>p.uid)) : {};
+    el.innerHTML="";
+    people.forEach(p=>{
+      const prof=ps[p.uid]||{};
+      const A=p.attempts, last=A[0];
+      const fulls=A.filter(a=>a.mode==="full");
+      const best=fulls.length?Math.max(...fulls.map(a=>a.score)):null;
+      const agg={}; Object.keys(SKILL_NAMES).forEach(k=>agg[k]={c:0,t:0});
+      const mc={};
+      A.forEach(a=>{ Object.keys(a.skills||{}).forEach(k=>{ if(agg[k]){agg[k].c+=a.skills[k].c;agg[k].t+=a.skills[k].t;} }); (a.misses||[]).forEach(m=>{ mc[m.t]=(mc[m.t]||0)+1; }); });
+      const rows=Object.keys(agg).filter(k=>agg[k].t).map(k=>({k,pct:Math.round(agg[k].c/agg[k].t*100)}));
+      const weak=rows.length>1?rows.slice().sort((a,b)=>a.pct-b.pct)[0]:null;
+      const topMiss=Object.entries(mc).sort((a,b)=>b[1]-a[1]).slice(0,6);
+      const card=document.createElement("div"); card.className="tr";
+      card.innerHTML=`<button class="trhead" aria-expanded="${open.has(p.uid)}"><img alt=""><span><strong></strong><small>${A.length} run${A.length===1?"":"s"} · last: ${esc(last.rank)}, ${last.pct}% · ${esc(fmtDate(last.at))}</small></span>
+        <p class="best"><b>${best!==null?best.toLocaleString():"—"}</b><small>best full run</small></p></button>
+        <div class="trbody" ${open.has(p.uid)?"":"hidden"}>
+          <h4>Skills across all runs${weak&&weak.pct<100?` · weakest: ${esc(SKILL_NAMES[weak.k])}`:""}</h4>
+          <div class="skills" style="margin:0">${rows.map(r=>`<div class="sk"><span class="lbl">${SKILL_NAMES[r.k]}</span><span class="pct">${r.pct}%</span><span class="track"><i style="width:${r.pct}%;background:${r.pct>=85?"var(--win)":r.pct>=60?"var(--t2)":"var(--t1)"}"></i></span></div>`).join("")}</div>
+          <h4>Most-missed questions</h4>
+          ${topMiss.length?topMiss.map(([t,n])=>`<div class="miss"><b>${n}×</b>${esc(t)}</div>`).join(""):`<p class="count">Nothing missed yet.</p>`}
+          <h4>Runs</h4>
+          ${A.slice(0,15).map(a=>`<div class="hrow"><span>${esc(MODE_NAMES[a.mode]||a.mode)} · ${esc(a.rank)}</span><span>${Number(a.score).toLocaleString()} pts · ${a.correct}/${a.total} · ${esc(fmtDate(a.at))}</span></div>`).join("")}
+        </div>`;
+      card.querySelector("img").src=prof.avatarUrl||"";
+      card.querySelector("strong").textContent=(prof.name||"Trainee")+(p.uid===UID?" (you)":"");
+      const hd=card.querySelector(".trhead"), bd=card.querySelector(".trbody");
+      hd.onclick=()=>{ const o=bd.hidden; bd.hidden=!o; hd.setAttribute("aria-expanded",o); o?open.add(p.uid):open.delete(p.uid); };
+      el.appendChild(card);
+    });
+  };
+  boardUnsub = DB.collection("runs").onSnapshot(s=>{ docs=s.docs; draw(); }, ()=>{ const el=$("#rows"); if(el) el.innerHTML=`<div class="empty">Scores couldn't load. Reload the page to try again.</div>`; });
+}
+
+// ---------- Chrome ----------
+$("#homeBtn").onclick=()=>{ if(!app.querySelector(".q") || confirm("Leave this run and go back to the level map?")){ resetRun(); home(); } };
+$("#themeBtn").onclick=()=>{
+  const r=document.documentElement;
+  const dark = r.dataset.theme ? r.dataset.theme==="dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+  r.dataset.theme = dark?"light":"dark"; store("b2b-theme",r.dataset.theme);
+};
+const savedTheme=store("b2b-theme"); if(savedTheme) document.documentElement.dataset.theme=savedTheme;
+
+home();
+})();
+</script>
+</body>
+</html>
